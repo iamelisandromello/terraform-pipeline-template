@@ -1,19 +1,24 @@
 name: Validate Terraform configuration
 description: "Executa a validação do Terraform para garantir que a configuração está correta."
 
+inputs:
+  terraform_path:
+    description: Caminho para o diretório com arquivos Terraform (default: terraform)
+    required: false
+    default: terraform
+
 runs:
   using: composite
   steps:
     # -------------------------------
     # 🔍 VALIDAÇÃO DO TERRAFORM
-    # Garante que a configuração está sintaticamente correta
-    # antes de prosseguir com o plano de execução.
-    # -------------------------------      
+    # -------------------------------
     - name: Validar sintaxe do Terraform
       shell: bash
-      working-directory: terraform
+      working-directory: ${{ inputs.terraform_path }}
       run: |
-        echo "🔍 Executando validação do Terraform..."
+        echo "🔍 Executando validação do Terraform em '${{ inputs.terraform_path }}'..."
+        
         if terraform validate; then
           echo "✅ Validação do Terraform concluída com sucesso."
         else

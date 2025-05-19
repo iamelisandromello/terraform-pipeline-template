@@ -27,18 +27,23 @@ inputs:
   environment:
     description: Nome do ambiente (dev, prod, etc)
     required: true
+  terraform_path:
+    description: Caminho do diretório Terraform (default: terraform)
+    required: false
+    default: terraform
 
 runs:
   using: composite
   steps:
-    - name: Gerar arquivos tfvars
     # -------------------------------
     # 🧾 GENERATE TFVARS FROM SECRETS
-    # -------------------------------      
+    # -------------------------------
+    - name: Gerar arquivos tfvars
       shell: bash
       run: |
-        printf '{"environments": %s}\n' '${{ inputs.environments }}' > terraform/environments.auto.tfvars.json
-        printf '{"global_env_vars": %s}\n' '${{ inputs.global_env_vars_json }}' > terraform/global-env-vars.auto.tfvars.json
+        mkdir -p "${{ inputs.terraform_path }}"
+        printf '{"environments": %s}\n' '${{ inputs.environments }}' > "${{ inputs.terraform_path }}/environments.auto.tfvars.json"
+        printf '{"global_env_vars": %s}\n' '${{ inputs.global_env_vars_json }}' > "${{ inputs.terraform_path }}/global-env-vars.auto.tfvars.json"
 
     - name: Verificar acesso ao S3
       shell: bash
@@ -53,6 +58,7 @@ runs:
         echo "PROJECT_NAME=${{ inputs.project_name }}"
         echo "S3_BUCKET_NAME=${{ inputs.s3_bucket_name }}"
         echo "ENVIRONMENT=${{ inputs.environment }}"
+        echo "TERRAFORM_PATH=${{ inputs.terraform_path }}"
 
     - name: Check AWS CLI setup
       shell: bash
