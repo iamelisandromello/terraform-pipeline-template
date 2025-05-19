@@ -17,6 +17,10 @@ inputs:
   environment:
     description: "Nome do ambiente (ex: dev, prod)"
     required: true
+  terraform_path:
+    description: Caminho para o diretório com os arquivos Terraform e script import.sh (default: terraform)
+    required: false
+    default: terraform
 
 runs:
   using: composite
@@ -27,7 +31,7 @@ runs:
     - name: Importar recursos existentes
       shell: bash
       run: |
-        bash "${{ github.action_path }}/scripts/import.sh"
+        bash "${{ inputs.terraform_path }}/scripts/import.sh"
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key_id }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_access_key }}

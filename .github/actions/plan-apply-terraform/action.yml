@@ -17,6 +17,10 @@ inputs:
   AWS_SECRET_ACCESS_KEY:
     description: Chave secreta AWS
     required: true
+  terraform_path:
+    description: Caminho para a raiz do Terraform (default: ./terraform)
+    required: false
+    default: "./terraform"
 
 runs:
   using: composite
@@ -24,8 +28,8 @@ runs:
     - name: Auto format Terraform and commit changes
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
       shell: bash
-      working-directory: terraform
       run: |
+        cd "${{ inputs.terraform_path }}"
         echo "🧹 Corrigindo formatação com terraform fmt..."
         terraform fmt -recursive
 
@@ -42,24 +46,24 @@ runs:
 
     - name: Terraform Plan
       shell: bash
-      working-directory: terraform
       env:
         TF_VAR_project_name: ${{ inputs.PROJECT_NAME }}
         TF_VAR_s3_bucket_name: ${{ inputs.S3_BUCKET_NAME }}
         AWS_ACCESS_KEY_ID: ${{ inputs.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
       run: |
+        cd "${{ inputs.terraform_path }}"
         echo "📦 Executando Terraform Plan..."
         terraform plan -input=false -var "environment=${{ inputs.ENVIRONMENT }}"
 
     - name: Terraform Apply
       shell: bash
-      working-directory: terraform
       env:
         TF_VAR_project_name: ${{ inputs.PROJECT_NAME }}
         TF_VAR_s3_bucket_name: ${{ inputs.S3_BUCKET_NAME }}
         AWS_ACCESS_KEY_ID: ${{ inputs.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
       run: |
+        cd "${{ inputs.terraform_path }}"
         echo "🚀 Executando Terraform Apply..."
         terraform apply -auto-approve -var "environment=${{ inputs.ENVIRONMENT }}"

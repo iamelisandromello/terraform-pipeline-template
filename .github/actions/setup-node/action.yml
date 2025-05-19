@@ -6,6 +6,10 @@ inputs:
     description: "Versão do Node.js a ser usada"
     required: false
     default: '20'
+  working_directory:
+    description: "Diretório onde os comandos serão executados (default: .)"
+    required: false
+    default: '.'
 
 runs:
   using: composite
@@ -17,6 +21,7 @@ runs:
 
     - name: Setup Environment Variables
       shell: bash
+      working-directory: ${{ inputs.working_directory }}
       run: |
         echo "PROJECT_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
 
