@@ -1,0 +1,36 @@
+name: Import existing AWS resources
+description: "Importa condicionalmente recursos AWS já existentes para o Terraform state."
+
+inputs:
+  aws_access_key_id:
+    description: AWS Access Key ID
+    required: true
+  aws_secret_access_key:
+    description: AWS Secret Access Key
+    required: true
+  aws_region:
+    description: Região da AWS
+    required: true
+  project_name:
+    description: Nome do projeto
+    required: true
+  environment:
+    description: "Nome do ambiente (ex: dev, prod)"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    # -------------------------------
+    # 🔄 IMPORT EXISTING RESOURCES
+    # -------------------------------   
+    - name: Importar recursos existentes
+      shell: bash
+      run: |
+        bash "${{ github.action_path }}/scripts/import.sh"
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key_id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_access_key }}
+        AWS_REGION: ${{ inputs.aws_region }}
+        PROJECT_NAME: ${{ inputs.project_name }}
+        ENVIRONMENT: ${{ inputs.environment }}

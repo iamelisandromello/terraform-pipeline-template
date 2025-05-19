@@ -1,0 +1,19 @@
+{
+	"name": "terraform-pipeline-templates",
+	"version": "1.0.0",
+	"description": "Reusable GitHub Actions workflows for Terraform Lambda deployments",
+	"author": "Elisandro M Correa <iamelisandromello@gmail.com>",
+	"license": "MIT",
+	"scripts": {
+		"lint:workflows": "npx actionlint"
+	},
+	"keywords": [
+		"SkeletonPipe ",
+		"Terraform",
+		"GitHub Actions",
+		"iamElisandroCorrea"
+	],
+	"devDependencies": {
+		"actionlint": "^2.0.6"
+	}
+}
