@@ -1,5 +1,5 @@
 name: 'Generate tfvars'
-description: 'Gera arquivo terraform.tfvars com base em variáveis dinâmicas e segredos'
+description: 'Gera arquivo terraform.auto.tfvars.json com base em variáveis dinâmicas e segredos'
 
 inputs:
   AWS_REGION:
@@ -22,7 +22,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Gerar arquivo terraform.tfvars
+    - name: Gerar arquivo terraform.auto.tfvars.json
       shell: bash
       run: |
         echo "Gerando terraform.auto.tfvars.json..."
@@ -30,22 +30,22 @@ runs:
         AWS_REGION="${{ inputs.AWS_REGION }}"
         PROJECT_NAME="${{ inputs.PROJECT_NAME }}"
         ENVIRONMENT="${{ inputs.ENVIRONMENT }}"
-        S3_BUCKET_NAME="${S3_BUCKET_NAME}"
+        S3_BUCKET_NAME="${{ inputs.s3_bucket_name }}"
         GLOBAL_ENV_VARS_JSON='${{ inputs.GLOBAL_ENV_VARS_JSON }}'
         ENVIRONMENTS_JSON='${{ inputs.ENVIRONMENTS }}'
 
         cat <<EOF > terraform/terraform.auto.tfvars.json
-      {
-        "aws_region": "$AWS_REGION",
-        "project_name": "$PROJECT_NAME",
-        "environment": "$ENVIRONMENT",
-        "s3_bucket_name": "$S3_BUCKET_NAME",
-        "global_env_vars": $GLOBAL_ENV_VARS_JSON,
-        "environments": $ENVIRONMENTS_JSON
-      }
-      EOF
-      echo "Tvars FOrmato Json!"
-      echo "Arquivo terraform.auto.tfvars.json gerado com sucesso!"
+{
+  "aws_region": "$AWS_REGION",
+  "project_name": "$PROJECT_NAME",
+  "environment": "$ENVIRONMENT",
+  "s3_bucket_name": "$S3_BUCKET_NAME",
+  "global_env_vars": $GLOBAL_ENV_VARS_JSON,
+  "environments": $ENVIRONMENTS_JSON
+}
+EOF
+
+        echo "Tvars em formato JSON gerado com sucesso!"
 
     - name: Verificar acesso ao bucket S3
       shell: bash
