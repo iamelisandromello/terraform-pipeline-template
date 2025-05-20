@@ -17,6 +17,12 @@ inputs:
   AWS_SECRET_ACCESS_KEY:
     description: Chave secreta AWS
     required: true
+  GLOBAL_ENV_VARS_JSON:
+    description: "JSON com variáveis globais"
+    required: true
+  ENVIRONMENTS_JSON:
+    description: "JSON com dados dos ambientes"
+    required: true
   terraform_path:
     description: Caminho para a raiz do Terraform (default ./terraform)
     required: false
@@ -49,6 +55,8 @@ runs:
       env:
         TF_VAR_project_name: ${{ inputs.PROJECT_NAME }}
         TF_VAR_s3_bucket_name: ${{ inputs.S3_BUCKET_NAME }}
+        TF_VAR_global_env_vars: ${{ inputs.GLOBAL_ENV_VARS_JSON }}
+        TF_VAR_environments: ${{ inputs.ENVIRONMENTS_JSON }}
         AWS_ACCESS_KEY_ID: ${{ inputs.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
       run: |
@@ -61,6 +69,8 @@ runs:
       env:
         TF_VAR_project_name: ${{ inputs.PROJECT_NAME }}
         TF_VAR_s3_bucket_name: ${{ inputs.S3_BUCKET_NAME }}
+        TF_VAR_global_env_vars: ${{ inputs.GLOBAL_ENV_VARS_JSON }}
+        TF_VAR_environments: ${{ inputs.ENVIRONMENTS_JSON }}
         AWS_ACCESS_KEY_ID: ${{ inputs.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
       run: |
