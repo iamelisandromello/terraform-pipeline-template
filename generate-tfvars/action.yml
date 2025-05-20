@@ -25,22 +25,27 @@ runs:
     - name: Gerar arquivo terraform.tfvars
       shell: bash
       run: |
-        echo "Gerando terraform.tfvars..."
+        echo "Gerando terraform.auto.tfvars.json..."
 
-        mkdir -p terraform
+        AWS_REGION="${{ inputs.AWS_REGION }}"
+        PROJECT_NAME="${{ inputs.PROJECT_NAME }}"
+        ENVIRONMENT="${{ inputs.ENVIRONMENT }}"
+        S3_BUCKET_NAME="${S3_BUCKET_NAME}"
+        GLOBAL_ENV_VARS_JSON='${{ inputs.GLOBAL_ENV_VARS_JSON }}'
+        ENVIRONMENTS_JSON='${{ inputs.ENVIRONMENTS }}'
 
-        S3_BUCKET_NAME=$(echo '${{ inputs.GLOBAL_ENV_VARS_JSON }}' | jq -r '.S3_BUCKET_NAME')
-
-        echo "aws_region = \"${{ inputs.AWS_REGION }}\""        > terraform/terraform.tfvars
-        echo "project_name = \"${{ inputs.PROJECT_NAME }}\""   >> terraform/terraform.tfvars
-        echo "environment = \"${{ inputs.ENVIRONMENT }}\""     >> terraform/terraform.tfvars
-        echo "s3_bucket_name = \"${S3_BUCKET_NAME}\""          >> terraform/terraform.tfvars
-        echo "global_env_vars = ${{ inputs.GLOBAL_ENV_VARS_JSON }}" >> terraform/terraform.tfvars
-        echo "environments = ${{ inputs.ENVIRONMENTS }}"            >> terraform/terraform.tfvars
-
-        echo "Conteúdo gerado em terraform/terraform.tfvars:"
-        cat terraform/terraform.tfvars
-
+        cat <<EOF > terraform/terraform.auto.tfvars.json
+      {
+        "aws_region": "$AWS_REGION",
+        "project_name": "$PROJECT_NAME",
+        "environment": "$ENVIRONMENT",
+        "s3_bucket_name": "$S3_BUCKET_NAME",
+        "global_env_vars": $GLOBAL_ENV_VARS_JSON,
+        "environments": $ENVIRONMENTS_JSON
+      }
+      EOF
+      echo "Tvars FOrmato Json!"
+      echo "Arquivo terraform.auto.tfvars.json gerado com sucesso!"
 
     - name: Verificar acesso ao bucket S3
       shell: bash
