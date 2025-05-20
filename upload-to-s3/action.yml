@@ -4,7 +4,7 @@ description: Extrai o bucket do JSON e faz upload do artefato da Lambda
 
 inputs:
   global_env_vars_json:
-    description: "JSON com variáveis globais (ex: S3_BUCKET_NAME)"
+    description: "JSON com variáveis globais (ex S3_BUCKET_NAME)"
     required: true
   aws_access_key_id:
     required: true
