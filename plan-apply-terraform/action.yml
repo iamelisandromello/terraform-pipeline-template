@@ -18,7 +18,7 @@ inputs:
     description: Chave secreta AWS
     required: true
   terraform_path:
-    description: Caminho para a raiz do Terraform (default: ./terraform)
+    description: Caminho para a raiz do Terraform (default ./terraform)
     required: false
     default: "./terraform"
 
