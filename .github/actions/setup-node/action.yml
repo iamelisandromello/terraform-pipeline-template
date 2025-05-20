@@ -25,12 +25,14 @@ runs:
       run: |
         echo "PROJECT_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
 
+        ENV=""
         if [[ "${{ github.base_ref }}" == "main" ]]; then
-          echo "ENVIRONMENT=prod" >> $GITHUB_ENV
+          ENV="prod"
         elif [[ "${{ github.base_ref }}" == "develop" ]]; then
-          echo "ENVIRONMENT=dev" >> $GITHUB_ENV
+          ENV="dev"
         else
-          echo "ENVIRONMENT=preview" >> $GITHUB_ENV
+          ENV="preview"
         fi
+        echo "ENVIRONMENT=$ENV" >> $GITHUB_ENV
 
         echo "📦 Ambiente configurado: PROJECT_NAME=${GITHUB_REPOSITORY#*/}, ENVIRONMENT=$ENVIRONMENT"
