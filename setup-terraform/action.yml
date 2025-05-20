@@ -27,19 +27,13 @@ inputs:
     default: terraform
 
 runs:
-  using: composite
+  using: "composite"
   steps:
-    # -------------------------------
-    # 🛠️ SETUP TERRAFORM
-    # -------------------------------
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: ${{ inputs.terraform_version }}
 
-    # -------------------------------
-    # 📦 TERRAFORM INIT & WORKSPACE
-    # -------------------------------
     - name: Terraform Init and Workspace
       shell: bash
       run: |
@@ -59,9 +53,6 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key_id }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_access_key }}
 
-    # -------------------------------
-    # ✅ VALIDATE INIT
-    # -------------------------------
     - name: Validar Terraform Init
       shell: bash
       run: |
