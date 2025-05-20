@@ -30,7 +30,9 @@ echo ""
 # Caminho padrão se não definido
 terraform_path="${TERRAFORM_PATH:-terraform}"
 
-cd "$terraform_path"
+echo "🔄 Mudando para o diretório do Terraform: $GITHUB_WORKSPACE/${TERRAFORM_PATH:-terraform}"
+cd "$GITHUB_WORKSPACE/${TERRAFORM_PATH:-terraform}"
+
 
 cd "$GITHUB_WORKSPACE/terraform" || {
   echo "❌ Diretório terraform/ não encontrado em $GITHUB_WORKSPACE"
@@ -61,6 +63,11 @@ fi
 
 QUEUE_NAME="${LAMBDA_NAME}-queue"
 LOG_GROUP_NAME="/aws/lambda/${LAMBDA_NAME}"
+
+terraform plan -out=tfplan -input=false -no-color || {
+  echo "❌ Falha no terraform plan. Abortando o import."
+  exit 1
+}
 
 set +e
 
