@@ -22,7 +22,7 @@ inputs:
     description: AWS Secret Access Key
     required: true
   terraform_path:
-    description: Caminho para o diretório com arquivos Terraform (default: terraform)
+    description: Caminho para o diretório com arquivos Terraform (default terraform)
     required: false
     default: terraform
 
