@@ -11,7 +11,6 @@ ls -la
 echo "TFVARS detectado:"
 cat *.tfvars || echo "⚠️ Nenhum arquivo tfvars encontrado"
 
-
 echo "🔧 DEBUG VARIÁVEIS DE AMBIENTE"
 echo "ENVIRONMENT=${ENVIRONMENT}"
 echo "PROJECT_NAME=${PROJECT_NAME}"
@@ -37,7 +36,6 @@ cd "$GITHUB_WORKSPACE/terraform" || {
   echo "❌ Diretório terraform/ não encontrado em $GITHUB_WORKSPACE"
   exit 1
 }
-
 
 echo "🔄 Executando terraform init..."
 terraform init -input=false -no-color -upgrade
@@ -66,14 +64,28 @@ LOG_GROUP_NAME="/aws/lambda/${LAMBDA_NAME}"
 
 set +e
 
+#########################################
 # ✅ Importa SQS se existir
-echo "🔍 Verificando SQS '$QUEUE_NAME'..."
-if QUEUE_URL=$(aws sqs get-queue-url --queue-name "$QUEUE_NAME" --region "$AWS_REGION" --query 'QueueUrl' --output text 2>/dev/null); then
-  terraform import "module.sqs.aws_sqs_queue.queue" "$QUEUE_URL" && echo "🟢 SQS importada com sucesso." || {
-    echo "⚠️ Falha ao importar a SQS."; exit 1;
+#########################################
+echo "🔍 Verificando existência da SQS '$QUEUE_NAME'..."
+QUEUE_URL=$(aws sqs get-queue-url --queue-name "$QUEUE_NAME" --region "$AWS_REGION" --query 'QueueUrl' --output text 2>/dev/null)
+
+if [ $? -eq 0 ] && [ -n "$QUEUE_URL" ]; then
+  echo "📥 URL da SQS encontrada: $QUEUE_URL"
+  echo "🌐 Importando recurso no Terraform: module.sqs.aws_sqs_queue.queue"
+  terraform state list | grep "module.sqs.aws_sqs_queue.queue" >/dev/null && {
+    echo "ℹ️ SQS '$QUEUE_NAME' já está no state. Nenhuma ação necessária."
+  } || {
+    set -x
+    terraform import "module.sqs.aws_sqs_queue.queue" "$QUEUE_URL" && \
+      echo "✅ SQS '$QUEUE_NAME' importada com sucesso." || {
+        echo "❌ Falha ao importar a SQS '$QUEUE_NAME'."
+        exit 1
+      }
+    set +x  
   }
 else
-  echo "🛠️ SQS '$QUEUE_NAME' não encontrada. Terraform irá criá-la."
+  echo "🛠️ SQS '$QUEUE_NAME' não encontrada na AWS. Terraform irá criá-la se necessário."
 fi
 
 # ✅ Verifica existência do Bucket S3 fornecido via TF_VAR_s3_bucket_name
