@@ -18,7 +18,7 @@ inputs:
     description: "Nome do ambiente (ex: dev, prod)"
     required: true
   terraform_path:
-    description: Caminho para o diretório com os arquivos Terraform e script import.sh (default: terraform)
+    description: Caminho para o diretório com os arquivos Terraform e script import.sh (default terraform)
     required: false
     default: terraform
 

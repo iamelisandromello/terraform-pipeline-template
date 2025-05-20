@@ -9,7 +9,7 @@ inputs:
     description: Nome do bucket S3 compartilhado
     required: true
   ENVIRONMENT:
-    description: "Ambiente de execução (ex: dev, staging, prod)"
+    description: "Ambiente de execução (dev, staging, prod)"
     required: true
   AWS_ACCESS_KEY_ID:
     description: Chave de acesso AWS

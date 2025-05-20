@@ -3,7 +3,7 @@ description: "Executa a validação do Terraform para garantir que a configuraç
 
 inputs:
   terraform_path:
-    description: Caminho para o diretório com arquivos Terraform (default: terraform)
+    description: Caminho para o diretório com arquivos Terraform (default terraform)
     required: false
     default: terraform
 
