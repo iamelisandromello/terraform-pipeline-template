@@ -33,11 +33,11 @@ runs:
       run: |
         set -e
       
-        if [ ! -f "${{ inputs.terraform_path }}/scripts/import.sh" ]; then
+        if [ ! -f "${GITHUB_ACTION_PATH}/scripts/import.sh" ]; then
           echo "❌ Script import.sh não encontrado."
           exit 1
         fi
-        bash "${{ inputs.terraform_path }}/scripts/import.sh"
+        bash "${GITHUB_ACTION_PATH}/scripts/import.sh"
 
         set +e
       env:
