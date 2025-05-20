@@ -1,71 +1,70 @@
-name: Generate tfvars and Validate AWS CLI
-description: "Extrai segredos do GitHub Secrets e gera arquivos tfvars para o Terraform. Valida acesso à AWS."
+name: 'Generate tfvars'
+description: 'Gera arquivo terraform.tfvars com base em variáveis dinâmicas e segredos'
 
 inputs:
-  environments:
-    description: JSON com ambientes
+  AWS_REGION:
     required: true
-  global_env_vars_json:
-    description: JSON com variáveis globais
+  PROJECT_NAME:
     required: true
-  s3_bucket_name:
-    description: Nome do bucket S3
+  ENVIRONMENT:
     required: true
-  aws_access_key_id:
-    description: AWS Access Key ID
+  GLOBAL_ENV_VARS_JSON:
     required: true
-  aws_secret_access_key:
-    description: AWS Secret Access Key
+  ENVIRONMENTS:
     required: true
-  aws_region:
-    description: Região da AWS
-    required: false
-    default: us-east-1
-  project_name:
-    description: Nome do projeto
-    required: true
-  environment:
-    description: Nome do ambiente (dev, prod, etc)
-    required: true
-  terraform_path:
-    description: Caminho do diretório Terraform (default: terraform)
-    required: false
-    default: terraform
 
 runs:
-  using: composite
+  using: "composite"
   steps:
-    # -------------------------------
-    # 🧾 GENERATE TFVARS FROM SECRETS
-    # -------------------------------
-    - name: Gerar arquivos tfvars
+    - name: Gerar arquivo terraform.tfvars
       shell: bash
       run: |
-        mkdir -p "${{ inputs.terraform_path }}"
-        printf '{"environments": %s}\n' '${{ inputs.environments }}' > "${{ inputs.terraform_path }}/environments.auto.tfvars.json"
-        printf '{"global_env_vars": %s}\n' '${{ inputs.global_env_vars_json }}' > "${{ inputs.terraform_path }}/global-env-vars.auto.tfvars.json"
+        echo "Gerando terraform.tfvars..."
 
-    - name: Verificar acesso ao S3
+        # Extrair o nome do bucket do JSON global_env_vars
+        S3_BUCKET_NAME=$(echo '${{ inputs.GLOBAL_ENV_VARS_JSON }}' | jq -r '.S3_BUCKET_NAME')
+
+        cat <<EOF > terraform.tfvars
+aws_region     = "${{ inputs.AWS_REGION }}"
+project_name   = "${{ inputs.PROJECT_NAME }}"
+environment    = "${{ inputs.ENVIRONMENT }}"
+s3_bucket_name = "${S3_BUCKET_NAME}"
+
+global_env_vars = ${{ inputs.GLOBAL_ENV_VARS_JSON }}
+environments    = ${{ inputs.ENVIRONMENTS }}
+EOF
+
+        echo "Conteúdo gerado em terraform.tfvars:"
+        cat terraform.tfvars
+
+
+    # -------------------------------
+    # ✅ VALIDAÇÃO DE ACESSO AWS
+    # -------------------------------
+    - name: Verificar acesso ao bucket S3
       shell: bash
       run: aws s3 ls s3://${{ inputs.s3_bucket_name }}
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key_id }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_access_key }}
+        AWS_REGION: ${{ inputs.aws_region }}
 
-    - name: Debug ENV
+    - name: Validar credenciais AWS (STS)
       shell: bash
-      run: |
-        echo "PROJECT_NAME=${{ inputs.project_name }}"
-        echo "S3_BUCKET_NAME=${{ inputs.s3_bucket_name }}"
-        echo "ENVIRONMENT=${{ inputs.environment }}"
-        echo "TERRAFORM_PATH=${{ inputs.terraform_path }}"
-
-    - name: Check AWS CLI setup
-      shell: bash
-      run: |
-        aws sts get-caller-identity
-        aws s3 ls
+      run: aws sts get-caller-identity
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key_id }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_access_key }}
         AWS_REGION: ${{ inputs.aws_region }}
+
+    # -------------------------------
+    # 🔍 DEBUG
+    # -------------------------------
+    - name: Debug variáveis de entrada
+      shell: bash
+      run: |
+        echo "project_name=${{ inputs.project_name }}"
+        echo "environment=${{ inputs.environment }}"
+        echo "s3_bucket_name=${{ inputs.s3_bucket_name }}"
+        echo "aws_region=${{ inputs.aws_region }}"
+        echo "terraform_path=${{ inputs.terraform_path }}"

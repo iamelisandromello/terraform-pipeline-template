@@ -49,12 +49,15 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_access_key }}
         AWS_REGION: ${{ inputs.aws_region }}
       run: |
+        set -e
         if [ ! -f "${{ inputs.project_name }}.zip" ]; then
           echo "❌ Arquivo ${{ inputs.project_name }}.zip não encontrado."
           exit 1
         fi
 
         echo "🚀 Enviando ${{ inputs.project_name }}.zip para S3..."
-        aws s3 cp "${{ inputs.project_name }}.zip" "s3://$S3_BUCKET_NAME/${{ inputs.project_name }}.zip"
-
+        aws s3 cp "${{ inputs.project_name }}.zip" "s3://$S3_BUCKET_NAME/${{ inputs.project_name }}.zip" \
+        --region $AWS_REGION --acl private
+        
+        set +e
         echo "✅ Upload concluído: s3://$S3_BUCKET_NAME/${{ inputs.project_name }}.zip"
