@@ -23,6 +23,7 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working_directory }}
       run: |
+        echo "Projeto Pipeline::::: $GITHUB_REPOSITORY"
         echo "PROJECT_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
 
         ENV=""
