@@ -27,23 +27,14 @@ runs:
       run: |
         echo "Gerando terraform.auto.tfvars.json..."
 
-        AWS_REGION="${{ inputs.AWS_REGION }}"
-        PROJECT_NAME="${{ inputs.PROJECT_NAME }}"
-        ENVIRONMENT="${{ inputs.ENVIRONMENT }}"
-        S3_BUCKET_NAME="${{ inputs.s3_bucket_name }}"
-        GLOBAL_ENV_VARS_JSON='${{ inputs.GLOBAL_ENV_VARS_JSON }}'
-        ENVIRONMENTS_JSON='${{ inputs.ENVIRONMENTS }}'
-
-        cat <<EOF > terraform/terraform.auto.tfvars.json
-{
-  "aws_region": "$AWS_REGION",
-  "project_name": "$PROJECT_NAME",
-  "environment": "$ENVIRONMENT",
-  "s3_bucket_name": "$S3_BUCKET_NAME",
-  "global_env_vars": $GLOBAL_ENV_VARS_JSON,
-  "environments": $ENVIRONMENTS_JSON
-}
-EOF
+        echo '{' > terraform/terraform.auto.tfvars.json
+        echo '  "aws_region": "${{ inputs.AWS_REGION }}",' >> terraform/terraform.auto.tfvars.json
+        echo '  "project_name": "${{ inputs.PROJECT_NAME }}",' >> terraform/terraform.auto.tfvars.json
+        echo '  "environment": "${{ inputs.ENVIRONMENT }}",' >> terraform/terraform.auto.tfvars.json
+        echo '  "s3_bucket_name": "${{ inputs.s3_bucket_name }}",' >> terraform/terraform.auto.tfvars.json
+        echo '  "global_env_vars": ${{ inputs.GLOBAL_ENV_VARS_JSON }},' >> terraform/terraform.auto.tfvars.json
+        echo '  "environments": ${{ inputs.ENVIRONMENTS }}' >> terraform/terraform.auto.tfvars.json
+        echo '}' >> terraform/terraform.auto.tfvars.json
 
         echo "Tvars em formato JSON gerado com sucesso!"
 
