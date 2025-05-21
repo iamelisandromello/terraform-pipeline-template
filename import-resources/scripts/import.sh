@@ -9,7 +9,7 @@ echo "PWD=$(pwd)"
 echo "Conteúdo do diretório:"
 ls -la
 echo "TFVARS detectado:"
-cat *.tfvars || echo "⚠️ Nenhum arquivo tfvars encontrado"
+ls *.tfvars && cat *.tfvars || echo "⚠️ Nenhum arquivo tfvars encontrado"
 
 echo "🔧 DEBUG VARIÁVEIS DE AMBIENTE"
 echo "ENVIRONMENT=${ENVIRONMENT}"
@@ -22,6 +22,8 @@ echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:0:4}********"
 export TF_VAR_environment="$ENVIRONMENT"
 export TF_VAR_project_name="$PROJECT_NAME"
 export TF_VAR_s3_bucket_name="$S3_BUCKET_NAME"
+export TF_VAR_global_env_vars="${GLOBAL_ENV_VARS}"
+export TF_VAR_environments="${ENVIRONMENTS}"
 
 echo "📦 TF_VARs disponíveis para o Terraform:"
 env | grep TF_VAR_ || echo "Nenhum TF_VAR encontrado."
@@ -30,12 +32,9 @@ echo ""
 # Caminho padrão se não definido
 terraform_path="${TERRAFORM_PATH:-terraform}"
 
-echo "🔄 Mudando para o diretório do Terraform: $GITHUB_WORKSPACE/${TERRAFORM_PATH:-terraform}"
-cd "$GITHUB_WORKSPACE/${TERRAFORM_PATH:-terraform}"
-
-
-cd "$GITHUB_WORKSPACE/terraform" || {
-  echo "❌ Diretório terraform/ não encontrado em $GITHUB_WORKSPACE"
+echo "🔄 Mudando para o diretório do Terraform: $GITHUB_WORKSPACE/$terraform_path"
+cd "$GITHUB_WORKSPACE/$terraform_path" || {
+  echo "❌ Diretório $terraform_path não encontrado em $GITHUB_WORKSPACE"
   exit 1
 }
 
@@ -71,9 +70,9 @@ terraform plan -out=tfplan -input=false -no-color || {
 
 set +e
 
-#########################################
+# ===== IMPORTS CONDICIONAIS ===== #
+
 # ✅ Importa SQS se existir
-#########################################
 echo "🔍 Verificando existência da SQS '$QUEUE_NAME'..."
 QUEUE_URL=$(aws sqs get-queue-url --queue-name "$QUEUE_NAME" --region "$AWS_REGION" --query 'QueueUrl' --output text 2>/dev/null)
 
@@ -95,7 +94,7 @@ else
   echo "🛠️ SQS '$QUEUE_NAME' não encontrada na AWS. Terraform irá criá-la se necessário."
 fi
 
-# ✅ Verifica existência do Bucket S3 fornecido via TF_VAR_s3_bucket_name
+# ✅ Verifica Bucket S3
 echo "🔍 Verificando Bucket '$S3_BUCKET_NAME'..."
 if aws s3api head-bucket --bucket "$S3_BUCKET_NAME" --region "$AWS_REGION" 2>/dev/null; then
   echo "🟢 Bucket S3 '$S3_BUCKET_NAME' existe. Referência como 'data.aws_s3_bucket.lambda_code_bucket'."
@@ -114,7 +113,7 @@ else
   echo "🛠️ IAM Role '$ROLE_NAME' não encontrada. Terraform irá criá-la."
 fi
 
-# ✅ Importa Log Group se existir (corrigido para o módulo cloudwatch)
+# ✅ Importa Log Group
 echo "🔍 Verificando Log Group '$LOG_GROUP_NAME'..."
 if aws logs describe-log-groups --log-group-name-prefix "$LOG_GROUP_NAME" --region "$AWS_REGION" | grep "$LOG_GROUP_NAME" &>/dev/null; then
   terraform state list | grep module.cloudwatch.aws_cloudwatch_log_group.lambda_log_group >/dev/null && \
@@ -127,7 +126,7 @@ else
   echo "🛠️ Log Group '$LOG_GROUP_NAME' não encontrado. Terraform irá criá-lo."
 fi
 
-# ✅ Importa Lambda Function se existir
+# ✅ Importa Lambda
 echo "🔍 Verificando Lambda '$LAMBDA_NAME'..."
 if aws lambda get-function --function-name "$LAMBDA_NAME" --region "$AWS_REGION" &>/dev/null; then
   terraform import "module.lambda.aws_lambda_function.lambda" "$LAMBDA_NAME" && echo "🟢 Lambda importada com sucesso." || {
