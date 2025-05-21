@@ -1,6 +1,17 @@
 #!/bin/bash
 set -e
 
+echo "📦 IMPORT.SH - DEBUG VARIÁVEIS"
+echo "PROJECT_NAME=$PROJECT_NAME"
+echo "ENVIRONMENT=$ENVIRONMENT"
+echo "AWS_REGION=$AWS_REGION"
+echo "PWD=$(pwd)"
+echo "Conteúdo do diretório:"
+ls -la
+echo "TFVARS detectado:"
+cat *.tfvars || echo "⚠️ Nenhum arquivo tfvars encontrado"
+
+
 echo "🔧 DEBUG VARIÁVEIS DE AMBIENTE"
 echo "ENVIRONMENT=${ENVIRONMENT}"
 echo "PROJECT_NAME=${PROJECT_NAME}"
@@ -14,12 +25,28 @@ export TF_VAR_project_name="$PROJECT_NAME"
 export TF_VAR_s3_bucket_name="$S3_BUCKET_NAME"
 
 echo "📦 TF_VARs disponíveis para o Terraform:"
-env | grep TF_VAR_
+env | grep TF_VAR_ || echo "Nenhum TF_VAR encontrado."
+echo ""
+
+# Caminho padrão se não definido
+terraform_path="${TERRAFORM_PATH:-terraform}"
+
+cd "$terraform_path"
 
 cd "$GITHUB_WORKSPACE/terraform" || {
   echo "❌ Diretório terraform/ não encontrado em $GITHUB_WORKSPACE"
   exit 1
 }
+
+
+echo "🔄 Executando terraform init..."
+terraform init -input=false -no-color -upgrade
+
+echo "🔍 Validando configurações Terraform..."
+terraform validate -no-color -json
+
+echo "✅ terraform init e validate concluídos com sucesso."
+echo ""
 
 # 🔄 Construção dos nomes reais com base no padrão de seus locals
 if [ "$ENVIRONMENT" = "prod" ]; then
