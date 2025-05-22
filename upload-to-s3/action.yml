@@ -23,7 +23,7 @@ inputs:
 runs:
   using: composite
   steps:
-    # ✅ Validações básicas dos inputs
+    # 🏗️ Validações básicas dos inputs
     - name: Validate inputs
       shell: bash
       run: |
@@ -51,7 +51,7 @@ runs:
     # -------------------------------
     # ☁️ UPLOAD ZIP PARA O S3
     # -------------------------------
-    # ✅ Realiza o upload do ZIP para o bucket S3
+    # ☁️ Realiza o upload do ZIP para o bucket S3
     - name: Upload Lambda ZIP to S3
       shell: bash
       env:
