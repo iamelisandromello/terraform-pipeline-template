@@ -25,6 +25,16 @@ inputs:
 runs:
   using: "composite"
   steps:
+    # 📊 Verificar o sucesso no recebimento das variáveis 
+    - name: Debug variáveis de entrada
+      shell: bash
+      run: |
+        echo "project_name=${{ inputs.PROJECT_NAME }}"
+        echo "environment=${{ inputs.ENVIRONMENT }}"
+        echo "s3_bucket_name=${{ inputs.s3_bucket_name }}"
+        echo "aws_region=${{ inputs.AWS_REGION }}"
+
+    # 🧾 Gerando arquivo de variáveis terraform
     - name: Gerar arquivo terraform.auto.tfvars.json
       shell: bash
       run: |
@@ -40,7 +50,8 @@ runs:
         echo '}' >> terraform/terraform.auto.tfvars.json
 
         echo "Tvars em formato JSON gerado com sucesso!"
-
+    
+    # 🗂️ Validando acesso ao repositório na AWS
     - name: Verificar acesso ao bucket S3
       shell: bash
       run: aws s3 ls s3://${{ inputs.s3_bucket_name }}
@@ -49,6 +60,7 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_access_key }}
         AWS_REGION: ${{ inputs.AWS_REGION }}
 
+    # 🛡️ Validando credenciais de acesso a AWS
     - name: Validar credenciais AWS (STS)
       shell: bash
       run: aws sts get-caller-identity
@@ -57,10 +69,3 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_access_key }}
         AWS_REGION: ${{ inputs.AWS_REGION }}
 
-    - name: Debug variáveis de entrada
-      shell: bash
-      run: |
-        echo "project_name=${{ inputs.PROJECT_NAME }}"
-        echo "environment=${{ inputs.ENVIRONMENT }}"
-        echo "s3_bucket_name=${{ inputs.s3_bucket_name }}"
-        echo "aws_region=${{ inputs.AWS_REGION }}"

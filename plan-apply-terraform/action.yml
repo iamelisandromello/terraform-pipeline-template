@@ -35,6 +35,7 @@ inputs:
 runs:
   using: composite
   steps:
+  # 🧭  Auto formataçao dos arqivo Terraform
     - name: Auto format Terraform and commit changes
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
       shell: bash

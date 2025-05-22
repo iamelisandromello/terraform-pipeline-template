@@ -33,7 +33,7 @@ runs:
         cd "${{ inputs.lambda_source_path }}"
         npm install
 
-    # ✅ Realiza build do projeto
+    # 🏗️ Realiza build do projeto
     - name: Build TypeScript
       shell: bash
       run: |

@@ -17,11 +17,13 @@ inputs:
 runs:
   using: composite
   steps:
+    # 🏷️  Definição da versão do NodeJS
     - name: Setup Node.js ${{ inputs.node_version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node_version }}
-
+    
+    # 🧱  Definição do ambiente a partir das variáveis de ambieente
     - name: Setup Environment Variables
       shell: bash
       working-directory: ${{ inputs.working_directory }}

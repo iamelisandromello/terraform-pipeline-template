@@ -31,6 +31,7 @@ runs:
     # -------------------------------
     # 🔄 IMPORT EXISTING RESOURCES
     # -------------------------------   
+    # 📤 Verifica a existência e realiza a chamada para o script de imports
     - name: Importar recursos existentes
       shell: bash
       run: |
