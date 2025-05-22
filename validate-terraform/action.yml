@@ -1,3 +1,6 @@
+# 📄 validate-terraform.yml
+# Action: Executa a validação do Terraform
+# Objetivo: Executa a validação do Terraform para garantir que a configuração está correta
 name: Validate Terraform configuration
 description: "Executa a validação do Terraform para garantir que a configuração está correta."
 

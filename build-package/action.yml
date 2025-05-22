@@ -1,3 +1,6 @@
+# 📄 build-package.yml
+# Action: Build and package the Lambda function
+# Objetivo: Instala dependências, realiza build e empacota código fonte em um ZIP para deploy
 name: Build and Package Lambda
 description: "Instala dependências, compila o TypeScript e empacota a Lambda com node_modules"
 
@@ -13,15 +16,24 @@ inputs:
 runs:
   using: composite
   steps:
+    # ✅ Valida se o diretório fonte existe
+    - name: Validate input path
+      shell: bash
+      run: |
+        test -d "${{ inputs.lambda_source_path }}" || (echo "::error::Source path '${{ inputs.lambda_source_path }}' does not exist" && exit 1)
+
     # -------------------------------
     # 📦 DEPENDENCIES & BUILD
     # -------------------------------
+    # ✅ Instala dependências e realiza build do projeto    
     - name: Install dependencies
       shell: bash
       run: |
         set -e
         cd "${{ inputs.lambda_source_path }}"
         npm install
+
+    # ✅ Realiza build do projeto
     - name: Build TypeScript
       shell: bash
       run: |
@@ -32,6 +44,7 @@ runs:
     # -------------------------------
     # 📁 PACKAGE LAMBDA FUNCTION
     # -------------------------------
+    # ✅ Cria o arquivo ZIP com o código da Lambda    
     - name: Create Lambda ZIP with node_modules
       shell: bash
       run: |

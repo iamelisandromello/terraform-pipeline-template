@@ -1,4 +1,6 @@
-# .github/actions/upload-to-s3/action.yml
+# 📄 upload-to-s3.yml
+# Action: Realiza upload do artefato ZIP para o bucket S3
+# Objetivo: Enviar o pacote da Lambda para armazenamento em S3
 name: Upload Lambda ZIP to S3
 description: Extrai o bucket do JSON e faz upload do artefato da Lambda
 
@@ -21,6 +23,13 @@ inputs:
 runs:
   using: composite
   steps:
+    # ✅ Validações básicas dos inputs
+    - name: Validate inputs
+      shell: bash
+      run: |
+        test -n "${{ inputs.global_env_vars_json }}" || (echo "::error::global_env_vars_json is required" && exit 1)
+        test -f "${{ inputs.project_name }}" || (echo "::error::File '${{ inputs.project_name }}' does not exist" && exit 1)
+
     # -------------------------------
     # 🧩 EXTRAI NOME DO BUCKET DO JSON
     # -------------------------------
@@ -42,6 +51,7 @@ runs:
     # -------------------------------
     # ☁️ UPLOAD ZIP PARA O S3
     # -------------------------------
+    # ✅ Realiza o upload do ZIP para o bucket S3
     - name: Upload Lambda ZIP to S3
       shell: bash
       env:

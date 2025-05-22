@@ -1,3 +1,6 @@
+# 📄 setup-terraform.yml
+# Action: Setup and Initialize Terraform
+# Objetivo: Configura o Terraform, inicializa e seleciona o workspace com variáveis do projeto
 name: Setup and Initialize Terraform
 description: "Configura o Terraform, inicializa e seleciona o workspace com variáveis do projeto"
 
@@ -34,6 +37,7 @@ runs:
       with:
         terraform_version: ${{ inputs.terraform_version }}
 
+    # 🔧 Inicializa o Terraform
     - name: Terraform Init and Workspace
       shell: bash
       run: |
@@ -53,6 +57,7 @@ runs:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key_id }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_access_key }}
 
+    # ✅ Valida sintaxe e configuração
     - name: Validar Terraform Init
       shell: bash
       run: |

@@ -1,3 +1,6 @@
+# 📄 import-resources.yml
+# Action: Condicionalmente importa recursos AWS para o Terraform
+# Objetivo: Verifica se recurso já existe e, se sim, importa via Terraform
 name: Import existing AWS resources
 description: "Importa condicionalmente recursos AWS já existentes para o Terraform state."
 
