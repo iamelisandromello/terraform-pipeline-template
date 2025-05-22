@@ -25,11 +25,11 @@ runs:
     # -------------------------------
     # 📦 DEPENDENCIES & BUILD
     # -------------------------------
-    # ✅ Instala dependências e realiza build do projeto    
+    # 📦 Instala dependências
     - name: Install dependencies
       shell: bash
       run: |
-        set -e
+        set -e  
         cd "${{ inputs.lambda_source_path }}"
         npm install
 
@@ -44,7 +44,7 @@ runs:
     # -------------------------------
     # 📁 PACKAGE LAMBDA FUNCTION
     # -------------------------------
-    # ✅ Cria o arquivo ZIP com o código da Lambda    
+    # 🗜️ Gera o pacote ZIP da Lambda    
     - name: Create Lambda ZIP with node_modules
       shell: bash
       run: |
