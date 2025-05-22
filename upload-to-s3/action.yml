@@ -33,6 +33,7 @@ runs:
     # -------------------------------
     # 🧩 EXTRAI NOME DO BUCKET DO JSON
     # -------------------------------
+    # 🗂️ Identifica o Bucket S3 repositório do Zip
     - name: Extrair nome do bucket do JSON
       shell: bash
       run: |
