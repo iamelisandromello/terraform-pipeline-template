@@ -1,22 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "📦 IMPORT.SH - DEBUG VARIÁVEIS"
-echo "PROJECT_NAME=$PROJECT_NAME"
-echo "ENVIRONMENT=$ENVIRONMENT"
-echo "AWS_REGION=$AWS_REGION"
-echo "PWD=$(pwd)"
-echo "Conteúdo do diretório:"
-ls -la
-echo "TFVARS detectado:"
-ls *.tfvars && cat *.tfvars || echo "⚠️ Nenhum arquivo tfvars encontrado"
-
-echo "🔧 DEBUG VARIÁVEIS DE AMBIENTE"
-echo "ENVIRONMENT=${ENVIRONMENT}"
-echo "PROJECT_NAME=${PROJECT_NAME}"
-echo "S3_BUCKET_NAME=${S3_BUCKET_NAME}"
-echo "AWS_REGION=${AWS_REGION}"
-echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:0:4}********"
+### === INÍCIO - VARIÁVEIS DE CONTEXTO E EXPORTAÇÃO === ###
 
 # ✅ Exporta variáveis como TF_VAR para o Terraform
 export TF_VAR_environment="$ENVIRONMENT"
@@ -29,25 +14,24 @@ echo "📦 TF_VARs disponíveis para o Terraform:"
 env | grep TF_VAR_ || echo "Nenhum TF_VAR encontrado."
 echo ""
 
-# Caminho padrão se não definido
+# Define caminho do diretório Terraform
 terraform_path="${TERRAFORM_PATH:-terraform}"
-
-echo "🔄 Mudando para o diretório do Terraform: $GITHUB_WORKSPACE/$terraform_path"
 cd "$GITHUB_WORKSPACE/$terraform_path" || {
   echo "❌ Diretório $terraform_path não encontrado em $GITHUB_WORKSPACE"
   exit 1
 }
+echo "🔄 Mudando para o diretório do Terraform: $GITHUB_WORKSPACE/$terraform_path"
 
-echo "🔄 Executando terraform init..."
+### === INIT & VALIDATE === ###
+
+echo "📦 Inicializando Terraform..."
 terraform init -input=false -no-color -upgrade
 
-echo "🔍 Validando configurações Terraform..."
+echo "✅ Validando arquivos Terraform..."
 terraform validate -no-color -json
 
-echo "✅ terraform init e validate concluídos com sucesso."
-echo ""
 
-# 🔄 Construção dos nomes reais com base no padrão de seus locals
+### === NOMES DOS RECURSOS CONSTRUÍDOS COM BASE NO PADRÃO DE LOCALS === ###
 if [ "$ENVIRONMENT" = "prod" ]; then
   LAMBDA_NAME="${PROJECT_NAME}"
   ROLE_NAME="${PROJECT_NAME}_execution_role"

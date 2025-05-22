@@ -1,3 +1,6 @@
+# 📄 generate-tvars.yml
+# Action: Gera arquivo terraform.auto.tfvars.json com base em variáveis dinâmicas e segredos
+# Objetivo: Gera arquivo terraform.auto.tfvars.json com base em variáveis dinâmicas e segredos
 name: 'Generate tfvars'
 description: 'Gera arquivo terraform.auto.tfvars.json com base em variáveis dinâmicas e segredos'
 

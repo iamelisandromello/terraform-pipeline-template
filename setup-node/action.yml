@@ -1,3 +1,6 @@
+# 📄 setup-node.yml
+# Action: Define versão do Node.js e variáveis de ambiente
+# Objetivo: Configura o Node.js e define variáveis globais de ambiente  
 name: Setup Node and Environment
 description: "Configura o Node.js e define variáveis globais de ambiente"
 

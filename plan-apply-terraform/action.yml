@@ -1,3 +1,7 @@
+# 📄 plan-apply-terraform.yml
+# Action: Executa o ciclo completo de Terraform (init, validate, plan, apply)
+# Objetivo: Aplicar a infraestrutura com base no plano gerado
+
 name: Terraform Plan and Apply
 description: "Executa o Terraform plan e apply com variáveis customizadas e autenticação AWS."
 
@@ -50,6 +54,7 @@ runs:
           echo "✅ Nenhuma alteração de formatação detectada."
         fi
 
+    # 🧠 Gera o plano de execução
     - name: Terraform Plan
       shell: bash
       env:
@@ -64,6 +69,7 @@ runs:
         echo "📦 Executando Terraform Plan..."
         terraform plan -input=false -var "environment=${{ inputs.ENVIRONMENT }}"
 
+    # 🚀 Aplica o plano se auto_approve for true
     - name: Terraform Apply
       shell: bash
       env:
